@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/css/home.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <nav class="navbar">
+      <a href="#" class="navbar-logo">Smart <span>Grow.</span> </a>
+    </nav>
+    <div class="main">
+      <div class="card1">
+        <h3>Light Intensity</h3>
+        <div id="gauge-chart" class="light"></div>
+      </div>
+      <div class="card2">
+        <h3>Humidity</h3>
+        <div class="humidity-bar">
+          <div class="filled-bar" id="humidity-bar"></div>
+        </div>
+        <p id="humidity-value"></p>
+      </div>
+      <div id="prediction-display" class="status">
+        <h3>Plant Status:</h3>
+      </div>
+      <div class="recomendation">
+        <h3>Recomendation:</h3>
+      </div>
+    </div>
+    <div class="chart">
+      <div class="chart-container">
+        <canvas id="lightHumidityChart"></canvas>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <script src="/static/js/gauge.js"></script>
+    <script src="/static/js/bar.js"></script>
+    <script src="/static/js/grafik.js"></script>
+    <script src="/static/js/predict.js"></script>
+  </body>
+</html>

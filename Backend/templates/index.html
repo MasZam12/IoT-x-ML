@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sensor Data</title>
+  <link rel="icon" type="image/x-icon" href="data:,">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f3f4f6;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+    }
+    .data-box {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .loading {
+      font-style: italic;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hasil Pembacaan Sensor dan Prediksi</h1>
+    <div id="data-display" class="data-box">
+      <p class="loading">Menunggu data sensor...</p>
+    </div>
+    <div id="prediction-display" class="data-box">
+      <p class="loading">Menunggu hasil prediksi...</p>
+    </div>
+  </div>
+
+  <script>
+    const dataDisplay = document.getElementById("data-display");
+    const predictionDisplay = document.getElementById("prediction-display");
+
+    async function fetchSensorData() {
+      try {
+        // Fetch data dari API sensor
+        const response = await fetch("/api/sensor/latest");
+        if (response.ok) {
+          const data = await response.json();
+
+          // Validasi dan tampilkan data sensor
+          if (data.latest_data) {
+            const { humidity, light } = data.latest_data;
+
+            dataDisplay.innerHTML = `
+              <h2>Nilai Sensor:</h2>
+              <p><strong>Humidity:</strong> ${humidity}</p>
+              <p><strong>Light:</strong> ${light}</p>
+            `;
+
+            // Setelah data sensor berhasil diambil, panggil API prediksi
+            fetchPrediction();
+          } else {
+            dataDisplay.innerHTML = `<p>Data sensor tidak lengkap.</p>`;
+            predictionDisplay.innerHTML = `<p>Prediksi tidak dapat dilakukan karena data sensor tidak lengkap.</p>`;
+          }
+        } else {
+          dataDisplay.innerHTML = `<p>Data tidak tersedia. Status: ${response.status}</p>`;
+        }
+      } catch (error) {
+        dataDisplay.innerHTML = `<p>Gagal mengambil data sensor: ${error.message}</p>`;
+      }
+    }
+
+    async function fetchPrediction() {
+      try {
+        // Fetch data prediksi dari API predict
+        const response = await fetch("/api/predict", {
+          method: "POST"
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+
+          // Tampilkan hasil prediksi
+          if (data.prediction) {
+            predictionDisplay.innerHTML = `
+              <h2>Hasil Prediksi:</h2>
+              <p><strong>Prediksi:</strong> ${data.prediction}</p>
+            `;
+          } else {
+            predictionDisplay.innerHTML = `<p>Prediksi tidak tersedia.</p>`;
+          }
+        } else {
+          predictionDisplay.innerHTML = `<p>Prediksi gagal. Status: ${response.status}</p>`;
+        }
+      } catch (error) {
+        predictionDisplay.innerHTML = `<p>Gagal mengambil prediksi: ${error.message}</p>`;
+      }
+    }
+
+    // Refresh data setiap 50 detik
+    setInterval(fetchSensorData, 50000);
+
+    // Ambil data saat halaman pertama kali dimuat
+    fetchSensorData();
+  </script>
+</body>
+</html>
