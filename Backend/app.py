@@ -7,7 +7,7 @@ import pickle
 app = Flask(__name__)
 
 # Memuat model yang disimpan
-model = pickle.load(open(r'C:\Users\izam3\Downloads\Code\BackPy\knn_model5kelompokfix.pkl', 'rb'))
+model = pickle.load(open(r'D:\Code\IoT x ML\Backend\knn_model5kelompokfix.pkl', 'rb'))
 
 # Menyimpan data sensor terbaru
 latest_sensor_data = {
