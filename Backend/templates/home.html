@@ -10,42 +10,78 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="/Backend/static/css/home.css" />
-    <title>Document</title>
+    <link rel="stylesheet" href="../static/css/home.css" />
+    <title>SmartGrow.</title>
   </head>
   <body>
     <nav class="navbar">
-      <a href="#" class="navbar-logo">Smart <span>Grow.</span> </a>
+      <div class="navbar-logo">
+        <a href="#" class="navbar-logo">Smart <span>Grow.</span> </a>
+      </div>
+      <div class="navbar-nav">
+        <a href="#">Beranda</a>
+        <a href="#info">Informasi</a>
+      </div>
     </nav>
-    <div class="main">
-      <div class="card1">
-        <h3>Light Intensity</h3>
-        <div id="gauge-chart" class="light"></div>
-      </div>
-      <div class="card2">
-        <h3>Humidity</h3>
-        <div class="humidity-bar">
-          <div class="filled-bar" id="humidity-bar"></div>
+
+    <section class="hero">
+      <div class="main">
+        <div class="card1 reveal">
+          <h3>Light Intensity</h3>
+          <img src="../static/img/sun.gif" alt="" class="sun" />
+          <div id="gauge-chart" class="light"></div>
         </div>
-        <p id="humidity-value"></p>
+        <div class="card2 reveal">
+          <h3>Humidity</h3>
+          <img src="../static/img/water.gif" alt="" class="water" />
+          <div class="humidity-bar">
+            <div class="filled-bar" id="humidity-bar"></div>
+          </div>
+          <p id="humidity-value"></p>
+        </div>
+        <div id="prediction-display" class="status reveal">
+          <h3>Hasil Prediksi:</h3>
+          <p>Menunggu data prediksi...</p>
+        </div>
+        <div class="recomendation reveal" id="recommendation-id">
+          <h3>Recommendation:</h3>
+          <p id="recommendation-text">Menunggu prediksi...</p>
+        </div>
       </div>
-      <div id="prediction-display" class="status">
-        <h3>Plant Status:</h3>
+      <div class="chart reveal">
+        <div class="chart-container">
+          <canvas id="lightHumidityChart"></canvas>
+        </div>
       </div>
-      <div class="recomendation">
-        <h3>Recomendation:</h3>
+    </section>
+
+    <section class="informasi" id="info">
+      <div class="content-container reveal">
+        <div class="card reveal">
+          <img
+            src="../static/img/pohon-removebg-preview.png"
+            alt=""
+            class="pohon reveal"
+          />
+          <div class="text reveal">
+            <h2>Perawatan</h2>
+            <p>
+              1. Penyiraman: 1-2 kali seminggu<br />2.
+              Pemangkasan: Rutin untuk menjaga bentuk<br />3. Pengendalian hama:
+              Periksa secara teratur<br />4. Pemupukan: Gunakan pupuk yang
+              seimbang
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="chart">
-      <div class="chart-container">
-        <canvas id="lightHumidityChart"></canvas>
-      </div>
-    </div>
+    </section>
 
     <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
-    <script src="/static/js/gauge.js"></script>
-    <script src="/static/js/bar.js"></script>
-    <script src="/static/js/grafik.js"></script>
-    <script src="/static/js/predict.js"></script>
+    <script src="../static/js/gauge.js"></script>
+    <script src="../static/js/bar.js"></script>
+    <script src="../static/js/grafik.js"></script>
+    <script src="../static/js/predict.js"></script>
+    <script src="../static/js/recomend.js"></script>
+    <script src="../static/js/reveal.js"></script>
   </body>
 </html>

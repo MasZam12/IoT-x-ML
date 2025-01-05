@@ -1,13 +1,12 @@
-// Inisialisasi chart
 const ctx = document.getElementById('lightHumidityChart').getContext('2d');
 const lightHumidityChart = new Chart(ctx, {
     type: 'line',
     data: {
-        labels: [], // Akan diupdate dengan waktu atau label
+        labels: [],
         datasets: [
             {
                 label: 'Light Intensity',
-                data: [], // Data akan diupdate dengan nilai light
+                data: [],
                 borderColor: 'rgba(255, 99, 132, 1)',
                 backgroundColor: 'rgba(255, 99, 132, 0.2)',
                 borderWidth: 2,
@@ -15,7 +14,7 @@ const lightHumidityChart = new Chart(ctx, {
             },
             {
                 label: 'Humidity',
-                data: [], // Data akan diupdate dengan nilai humidity
+                data: [],
                 borderColor: 'rgba(54, 162, 235, 1)',
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderWidth: 2,
@@ -31,18 +30,27 @@ const lightHumidityChart = new Chart(ctx, {
             },
             title: {
                 display: true,
-                text: 'Light and Humidity Levels Over Time'
+                text: 'Light and Humidity Levels Over Time',
+                font: {
+                    size: 20,
+                    width: 700,
+                    color: '#000'
+                },
+                padding: {
+                    top: 20
+                }
             }
         },
         scales: {
             y: {
-                beginAtZero: true
+                beginAtZero: true,
+                min: 0,
+                max: 1200
             }
         }
     }
 });
 
-// Fungsi untuk mengambil data terbaru dari API dan update grafik
 async function fetchAndUpdateChartData() {
     try {
         const response = await fetch('/api/sensor/latest');
@@ -55,22 +63,20 @@ async function fetchAndUpdateChartData() {
 
         const latestData = data.latest_data;
 
-        // Tambahkan data baru ke grafik
-        const currentTime = new Date().toLocaleTimeString(); // Ambil waktu saat ini sebagai label
+        const light = latestData.light !== undefined && latestData.light !== null ? latestData.light : 0;
+        const humidity = latestData.humidity !== undefined && latestData.humidity !== null ? latestData.humidity : 0;
 
-        // Tambahkan data light dan humidity ke grafik
-        lightHumidityChart.data.labels.push(currentTime); // Menambah label waktu
-        lightHumidityChart.data.datasets[0].data.push(latestData.light); // Menambah data light
-        lightHumidityChart.data.datasets[1].data.push(latestData.humidity); // Menambah data humidity
+        const currentTime = new Date().toLocaleTimeString();
+        lightHumidityChart.data.labels.push(currentTime);
+        lightHumidityChart.data.datasets[0].data.push(light);
+        lightHumidityChart.data.datasets[1].data.push(humidity);
 
-        // Batasi data agar tidak terlalu panjang (misalnya hanya 10 data terakhir)
         if (lightHumidityChart.data.labels.length > 10) {
             lightHumidityChart.data.labels.shift();
             lightHumidityChart.data.datasets[0].data.shift();
             lightHumidityChart.data.datasets[1].data.shift();
         }
 
-        // Update chart dengan data terbaru
         lightHumidityChart.update();
         
     } catch (error) {
@@ -78,6 +84,5 @@ async function fetchAndUpdateChartData() {
     }
 }
 
-// Panggil fungsi untuk mengambil data dan update chart setiap 5 detik
 fetchAndUpdateChartData();
-setInterval(fetchAndUpdateChartData, 5000); // Setiap 5 detik
+setInterval(fetchAndUpdateChartData, 1000);

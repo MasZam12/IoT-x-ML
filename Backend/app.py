@@ -1,15 +1,16 @@
 from flask import Flask, request, jsonify, render_template
-import joblib
 import os
-import numpy as np
+import pandas as pd
 import pickle
+import logging
 
 app = Flask(__name__)
 
-# Memuat model yang disimpan
-model = pickle.load(open(r'D:\Code\IoT x ML\Backend\knn_model5kelompokfix.pkl', 'rb'))
+logging.basicConfig(level=logging.INFO)
 
-# Menyimpan data sensor terbaru
+model_path = os.path.join(os.getcwd(), 'plant_health_model.pkl')
+model = pickle.load(open(model_path, 'rb'))
+
 latest_sensor_data = {
     "humidity": None,
     "light": None,
@@ -23,62 +24,49 @@ def index():
 def sensor_data():
     global latest_sensor_data
 
-    # Mengambil data JSON dari request
     data = request.get_json()
     if not data:
         return jsonify({"error": "Tidak ada data yang diterima"}), 400
 
-    # Memproses data dari ESP32
     humidity = data.get("humidity")
     light = data.get("light")
 
-    # Validasi data
     if humidity is None or light is None:
         return jsonify({"error": "Data tidak lengkap atau kunci salah"}), 400
 
-    # Menyimpan data terbaru
+    if not isinstance(humidity, (int, float)) or not isinstance(light, (int, float)):
+        return jsonify({"error": "Data sensor harus berupa angka"}), 400
+
     latest_sensor_data["humidity"] = humidity
     latest_sensor_data["light"] = light
+    logging.info(f"Data diterima: {latest_sensor_data}")
 
-    # Menampilkan data di terminal untuk debugging
-    print(f"Data diterima: {latest_sensor_data}")
-
-    # Mengirim respons ke ESP32
     return jsonify({"status": "Berhasil", "data": latest_sensor_data}), 200
 
 @app.route('/api/sensor/latest', methods=['GET'])
 def get_latest_sensor_value():
-    # Mengembalikan data sensor terbaru
     if all(value is not None for value in latest_sensor_data.values()):
         return jsonify({"latest_data": latest_sensor_data}), 200
     return jsonify({"error": "Tidak ada data sensor tersedia"}), 404
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
-    global latest_sensor_data
-
-    # Pastikan semua data sensor tersedia sebelum prediksi
     if any(value is None for value in latest_sensor_data.values()):
+        logging.error("Data sensor tidak lengkap untuk prediksi")
         return jsonify({"error": "Data sensor tidak lengkap untuk prediksi"}), 400
 
-    # Ambil data sensor terbaru
-    humidity = float(latest_sensor_data["humidity"])
-    light = float(latest_sensor_data["light"])
-
-    # Format data menjadi array 2D untuk prediksi
-    input_data = np.array([[humidity, light]])
-
-    # Lakukan prediksi
     try:
-        prediction = model.predict(input_data)
+        humidity = float(latest_sensor_data["humidity"])
+        light = float(latest_sensor_data["light"])
+        input_data = pd.DataFrame([[humidity, light]], columns=["humidity", "light"])
 
-        prediction_value = prediction[0]
+        prediction_label = model.predict(input_data)[0]
+        logging.info(f"Prediction successful: {prediction_label}")
 
-        return jsonify({"prediction": prediction_value}), 200
+        return jsonify({"prediction": prediction_label}), 200
     except Exception as e:
-        print(f"Error dalam prediksi: {str(e)}") 
+        logging.error(f"Error dalam prediksi: {str(e)}")
         return jsonify({"error": "Terjadi kesalahan saat memproses prediksi", "message": str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

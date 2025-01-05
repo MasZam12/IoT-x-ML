@@ -1,8 +1,6 @@
-// Mengambil elemen dari HTML
 const humidityBar = document.getElementById("humidity-bar");
 const humidityValueDisplay = document.getElementById("humidity-value");
 
-// Fungsi untuk mengambil data humidity dan mengupdate bar
 async function fetchHumidityData() {
     try {
         const response = await fetch('/api/sensor/latest');
@@ -15,7 +13,6 @@ async function fetchHumidityData() {
 
         const latestData = data.latest_data;
 
-        // Update bar untuk Humidity
         humidityBar.style.width = `${latestData.humidity}%`;
         humidityValueDisplay.textContent = `${latestData.humidity}%`;
 
@@ -24,6 +21,5 @@ async function fetchHumidityData() {
     }
 }
 
-// Panggil fungsi untuk mengambil data dan update bar setiap 5 detik
 fetchHumidityData();
-setInterval(fetchHumidityData, 5000);
+setInterval(fetchHumidityData, 1000);
